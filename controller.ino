@@ -12,10 +12,6 @@
 // constant definitions
 #define BUTTON_PIN 7
 #define COLOR_ORDER RGB
-#define LED_COLOR_DARKER_DIAMOND 0x94EBFF
-#define LED_COLOR_DARKER_EMERALD 0x3A9157
-#define LED_COLOR_DARKER_LAPIS_LAZULI 0x1D5085
-#define LED_COLOR_DARKER_REDSTONE 0xD95757
 #define LED_COLOR_DIAMOND 0xB9F2FF
 #define LED_COLOR_EMERALD 0x50C878
 #define LED_COLOR_LAPIS_LAZULI 0x2B6199
@@ -36,24 +32,10 @@
 // variable definitions
 CRGB leds[LED_COUNT];
 int led_mode;
-
-// initialization
-void setup(void) {
-    // wait for 3 seconds
-    delay(3000);
-
-    // initialize the LED strip
-    FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, LED_COUNT);
-
-    // set the initial LED mode
-    led_mode = 0;
-
-    // initialize LED mode button (input)
-    pinMode(BUTTON_PIN, INPUT);
-}
+uint8_t hue;
 
 // main loop
-void loop(void) {
+void loop() {
     // check the button status
     button_state = digitalRead(BUTTON_PIN);
 
@@ -70,94 +52,72 @@ void loop(void) {
     // 
     switch (led_mode) {
         case LED_MODE_DIAMOND_FADING:
-            fill_gradient_RGB(leds, 0, LED_COLOR_DIAMOND, LED_COUNT - 1, LED_COLOR_DARKER_DIAMOND, LONGEST_HUES);
-            FastLED.show();
-            delay(1000);
-            fill_gradient_RGB(leds, 0, LED_COLOR_DARKER_DIAMOND, LED_COUNT - 1, LED_COLOR_DIAMOND, LONGEST_HUES);
-            FastLED.show();
-            delay(1000);
-            break;
-        case LED_MODE_DIAMOND_STILL:
-            // set all LEDs to the appropriate color
-            for (int i = 0; i < LED_COUNT; i++) {
-                leds[i] = LED_COLOR_DIAMOND;
+            CRGB starting_color = LED_COLOR_DIAMOND;
+            uint8_t color_steps = (starting_color - LED_COLOR_DARKER_DIAMOND) / 150;
+
+            EVERY_N_MILLISECONDS (150) {
+                for (int i = 0; i < LED_COUNT; i++) {
+                    fade_to_color(leds[i], starting_color, 5);
+                }
             }
 
+            FastLED.show();
+            break;
+        case LED_MODE_DIAMOND_STILL:
+            // set the appropriate value for all LEDs and update
+            fill_solid(leds, LED_COUNT, LED_COLOR_DIAMOND);
             FastLED.show();
             break;
         case LED_MODE_EMERALD_FADING:
             break;
         case LED_MODE_EMERALD_STILL:
-            // set all LEDs to the appropriate color
-            for (int i = 0; i < LED_COUNT; i++) {
-                leds[i] = LED_COLOR_EMERALD;
-            }
-
+            // set the appropriate value for all LEDs and update
+            fill_solid(leds, LED_COUNT, LED_COLOR_EMERALD);
             FastLED.show();
             break;
         case LED_MODE_LAPIS_LAZULI_FADING:
             break;
         case LED_MODE_LAPIS_LAZULI_STILL:
-            // set all LEDs to the appropriate color
-            for (int i = 0; i < LED_COUNT; i++) {
-                leds[i] = LED_COLOR_LAPIS_LAZULI;
-            }
-
+            // set the appropriate value for all LEDs and update
+            fill_solid(leds, LED_COUNT, LED_COLOR_LAPIS_LAZULI);
             FastLED.show();
             break;
         case LED_MODE_REDSTONE_FADING:
             break;
         case LED_MODE_REDSTONE_STILL:
-            // set all LEDs to the appropriate color
-            for (int i = 0; i < LED_COUNT; i++) {
-                leds[i] = LED_COLOR_REDSTONE;
-            }
-
+            // set the appropriate value for all LEDs and update
+            fill_solid(leds, LED_COUNT, LED_COLOR_REDSTONE);
             FastLED.show();
             break;
         case LED_MODE_RGB:
-            for (int j = 0; j < 3; j++) {
-                memset(leds, 0, LED_COUNT * 3);
+            // set the appropriate value for all LEDs
+            fill_solid(leds, LED_COUNT, CHSV(hue, 255, 255));
 
-                for (int k = 0; k < 256; k++) {
-                    for (int i = 0; i < LED_COUNT; i++) {
-                        switch (j) {
-                            case 0:
-                                leds[i].r = k;
-                                break;
-                            case 1:
-                                leds[i].g = k;
-                                break;
-                            case 2:
-                                leds[i].b = k;
-                                break;
-                        }
-                    }
-
-                    FastLED.show();
-                    delay(3);
-                }
-
-                for (int k = 255; k >= 0; k--) {
-                    for (int i = 0; i < LED_COUNT; i++) {
-                        switch (j) {
-                            case 0:
-                                leds[i].r = k;
-                                break;
-                            case 1:
-                                leds[i].g = k;
-                                break;
-                            case 2:
-                                leds[i].b = k;
-                                break;
-                        }
-                    }
-
-                    FastLED.show();
-                    delay(3);
-                }
+            // increase the hue value every 150 milliseconds 
+            EVERY_N_MILLISECONDS(150) {
+                hue++;
             }
 
+            // update
+            FastLED.show();
             break;
     }
+}
+
+// initialization
+void setup() {
+    // initialize the LED strip
+    FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, LED_COUNT);
+
+    // set the initial brigthness level
+    FastLED.setBrightness(50);
+
+    // set the initial hue value
+    hue = 0;
+
+    // set the initial LED mode
+    led_mode = 0;
+
+    // initialize LED mode button (input)
+    pinMode(BUTTON_PIN, INPUT);
 }
