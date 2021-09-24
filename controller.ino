@@ -12,6 +12,10 @@
 // constant definitions
 #define BUTTON_PIN 7
 #define COLOR_ORDER RGB
+#define FLOW_BACKWARD 1
+#define FLOW_FORWARD 0
+#define LED_BRIGHTNESS_MAXIMUM 200
+#define LED_BRIGHTNESS_MINIMUM 100
 #define LED_COLOR_DIAMOND 0xB9F2FF
 #define LED_COLOR_EMERALD 0x50C878
 #define LED_COLOR_LAPIS_LAZULI 0x2B6199
@@ -32,6 +36,8 @@
 // variable definitions
 CRGB leds[LED_COUNT];
 int led_mode;
+uint8_t brightness;
+uint8_t flow;
 uint8_t hue;
 
 // main loop
@@ -49,59 +55,166 @@ void loop() {
         }
     }
 
-    // 
+    // evaluate the button state
     switch (led_mode) {
         case LED_MODE_DIAMOND_FADING:
-            CRGB starting_color = LED_COLOR_DIAMOND;
-            uint8_t color_steps = (starting_color - LED_COLOR_DARKER_DIAMOND) / 150;
+            // set the color for all LEDs
+            fill_solid(leds, LED_COUNT, LED_COLOR_DIAMOND);
 
+            // fade the brightness level
             EVERY_N_MILLISECONDS (150) {
-                for (int i = 0; i < LED_COUNT; i++) {
-                    fade_to_color(leds[i], starting_color, 5);
+                if (flow == FLOW_BACKWARD) {
+                    brightness--;
+
+                    if (brightness == LED_BRIGHTNESS_MINIMUM) {
+                        flow = FLOW_FORWARD;
+                    }
+                } else if (flow == FLOW_FORWARD) {
+                    brightness++;
+
+                    if (brightness == LED_BRIGHTNESS_MAXIMUM) {
+                        flow = FLOW_BACKWARD;
+                    }
                 }
             }
 
-            FastLED.show();
+            // set the brightness level
+            FastLED.setBrightness(LED_BRIGHTNESS_MAXIMUM);
+
+            // exit the switch() block
             break;
         case LED_MODE_DIAMOND_STILL:
-            // set the appropriate value for all LEDs and update
+            // set the color for all LEDs
             fill_solid(leds, LED_COUNT, LED_COLOR_DIAMOND);
-            FastLED.show();
+
+            // set the brightness level
+            FastLED.setBrightness(LED_BRIGHTNESS_MAXIMUM);
+
+            // exit the switch() block
             break;
         case LED_MODE_EMERALD_FADING:
+            // set the color for all LEDs
+            fill_solid(leds, LED_COUNT, LED_COLOR_EMERALD);
+
+            // fade the brightness level
+            EVERY_N_MILLISECONDS (150) {
+                if (flow == FLOW_BACKWARD) {
+                    brightness--;
+
+                    if (brightness == LED_BRIGHTNESS_MINIMUM) {
+                        flow = FLOW_FORWARD;
+                    }
+                } else if (flow == FLOW_FORWARD) {
+                    brightness++;
+
+                    if (brightness == LED_BRIGHTNESS_MAXIMUM) {
+                        flow = FLOW_BACKWARD;
+                    }
+                }
+            }
+
+            // set the brightness level
+            FastLED.setBrightness(LED_BRIGHTNESS_MAXIMUM);
+
+            // exit the switch() block
             break;
         case LED_MODE_EMERALD_STILL:
-            // set the appropriate value for all LEDs and update
+            // set the color for all LEDs
             fill_solid(leds, LED_COUNT, LED_COLOR_EMERALD);
-            FastLED.show();
+
+            // set the brightness level
+            FastLED.setBrightness(LED_BRIGHTNESS_MAXIMUM);
+
+            // exit the switch() block
             break;
         case LED_MODE_LAPIS_LAZULI_FADING:
+            // set the color for all LEDs
+            fill_solid(leds, LED_COUNT, LED_COLOR_LAPIS_LAZULI);
+
+            // fade the brightness level
+            EVERY_N_MILLISECONDS (150) {
+                if (flow == FLOW_BACKWARD) {
+                    brightness--;
+
+                    if (brightness == LED_BRIGHTNESS_MINIMUM) {
+                        flow = FLOW_FORWARD;
+                    }
+                } else if (flow == FLOW_FORWARD) {
+                    brightness++;
+
+                    if (brightness == LED_BRIGHTNESS_MAXIMUM) {
+                        flow = FLOW_BACKWARD;
+                    }
+                }
+            }
+
+            // set the brightness level
+            FastLED.setBrightness(LED_BRIGHTNESS_MAXIMUM);
+
+            // exit the switch() block
             break;
         case LED_MODE_LAPIS_LAZULI_STILL:
-            // set the appropriate value for all LEDs and update
+            // set the color for all LEDs
             fill_solid(leds, LED_COUNT, LED_COLOR_LAPIS_LAZULI);
-            FastLED.show();
+
+            // set the brightness level
+            FastLED.setBrightness(LED_BRIGHTNESS_MAXIMUM);
+
+            // exit the switch() block
             break;
         case LED_MODE_REDSTONE_FADING:
+            // set the color for all LEDs
+            fill_solid(leds, LED_COUNT, LED_COLOR_REDSTONE);
+
+            // fade the brightness level
+            EVERY_N_MILLISECONDS (150) {
+                if (flow == FLOW_BACKWARD) {
+                    brightness--;
+
+                    if (brightness == LED_BRIGHTNESS_MINIMUM) {
+                        flow = FLOW_FORWARD;
+                    }
+                } else if (flow == FLOW_FORWARD) {
+                    brightness++;
+
+                    if (brightness == LED_BRIGHTNESS_MAXIMUM) {
+                        flow = FLOW_BACKWARD;
+                    }
+                }
+            }
+
+            // set the brightness level
+            FastLED.setBrightness(LED_BRIGHTNESS_MAXIMUM);
+
+            // exit the switch() block
             break;
         case LED_MODE_REDSTONE_STILL:
-            // set the appropriate value for all LEDs and update
+            // set the color for all LEDs
             fill_solid(leds, LED_COUNT, LED_COLOR_REDSTONE);
-            FastLED.show();
+
+            // set the brightness level
+            FastLED.setBrightness(LED_BRIGHTNESS_MAXIMUM);
+
+            // exit the switch() block
             break;
         case LED_MODE_RGB:
-            // set the appropriate value for all LEDs
+            // set the color for all LEDs
             fill_solid(leds, LED_COUNT, CHSV(hue, 255, 255));
 
-            // increase the hue value every 150 milliseconds 
+            // set the brightness level
+            FastLED.setBrightness(LED_BRIGHTNESS_MAXIMUM);
+
+            // increase the hue level every 150 milliseconds 
             EVERY_N_MILLISECONDS(150) {
                 hue++;
             }
 
-            // update
-            FastLED.show();
+            // exit the switch() block
             break;
     }
+
+    // update
+    FastLED.show();
 }
 
 // initialization
@@ -109,10 +222,13 @@ void setup() {
     // initialize the LED strip
     FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, LED_COUNT);
 
-    // set the initial brigthness level
-    FastLED.setBrightness(50);
+    // set the initial brightness level
+    brightness = LED_BRIGHTNESS_MAXIMUM;
 
-    // set the initial hue value
+    // set the initial flow value
+    flow = FLOW_FORWARD;
+
+    // set the initial hue level
     hue = 0;
 
     // set the initial LED mode
