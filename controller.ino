@@ -35,10 +35,10 @@
 
 // variable definitions
 CRGB leds[LED_COUNT];
-int led_mode;
 uint8_t brightness;
 uint8_t flow;
 uint8_t hue;
+uint8_t led_mode;
 
 // main loop
 void loop() {
