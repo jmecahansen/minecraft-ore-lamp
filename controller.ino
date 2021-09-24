@@ -35,6 +35,7 @@
 
 // variable definitions
 CRGB leds[LED_COUNT];
+int button_state;
 uint8_t brightness;
 uint8_t flow;
 uint8_t hue;
@@ -224,6 +225,9 @@ void setup() {
 
     // set the initial brightness level
     brightness = LED_BRIGHTNESS_MAXIMUM;
+
+    // set the initial button state
+    button_state = LOW;
 
     // set the initial flow value
     flow = FLOW_FORWARD;
