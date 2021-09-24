@@ -35,8 +35,8 @@
 
 // variable definitions
 CRGB leds[LED_COUNT];
-int button_state;
 uint8_t brightness;
+int button_state;
 uint8_t flow;
 uint8_t hue;
 uint8_t led_mode;
