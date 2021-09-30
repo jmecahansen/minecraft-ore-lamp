@@ -80,7 +80,7 @@ void loop() {
             }
 
             // set the brightness level
-            FastLED.setBrightness(LED_BRIGHTNESS_MAXIMUM);
+            FastLED.setBrightness(brightness);
 
             // exit the switch() block
             break;
@@ -115,7 +115,7 @@ void loop() {
             }
 
             // set the brightness level
-            FastLED.setBrightness(LED_BRIGHTNESS_MAXIMUM);
+            FastLED.setBrightness(brightness);
 
             // exit the switch() block
             break;
@@ -150,7 +150,7 @@ void loop() {
             }
 
             // set the brightness level
-            FastLED.setBrightness(LED_BRIGHTNESS_MAXIMUM);
+            FastLED.setBrightness(brightness);
 
             // exit the switch() block
             break;
@@ -185,7 +185,7 @@ void loop() {
             }
 
             // set the brightness level
-            FastLED.setBrightness(LED_BRIGHTNESS_MAXIMUM);
+            FastLED.setBrightness(brightness);
 
             // exit the switch() block
             break;
